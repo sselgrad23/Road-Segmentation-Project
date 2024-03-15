@@ -1,0 +1,7 @@
+
+
+
+large eth 1000s of images dataset /hdd/data/eth_aerial_segmentation_paper_data
+eth normal /hdd/data/eth_road_segmentation_data
+
+eth eval /hdd/data/eth_road_segmentation_data/test

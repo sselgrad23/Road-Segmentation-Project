@@ -1,0 +1,24 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
+numpy = "*"
+matplotlib = "*"
+pyqt5 = "*"
+albumentations = "*"
+opencv-python-headless = "*"
+jupyter = "*"
+tqdm = "*"
+torchmetrics = "*"
+imageio = "*"
+tensorboard = "*"
+
+[dev-packages]
+
+[requires]
+python_version = "3.8"
