@@ -18,7 +18,7 @@ do
   do
     for l in "${loss[@]}"
       do
-        bsub -n 10 -W 6:00 -G s_stud_infk -R "rusage[mem=1500,ngpus_excl_p=1]" -R "select[gpu_mtotal0>=16000]" "module load gcc/8.2.0 python_gpu/3.8.5; pipenv run        python main.py --model v2GAN --data /cluster/scratch/zdavid/cil_data_root  --epochs 10000 --batch_size 8 --workers 10 --lr '$lr' \
+        bsub -n 10 -W 6:00 -G s_stud_infk -R "rusage[mem=1500,ngpus_excl_p=1]" -R "select[gpu_mtotal0>=16000]" "module load gcc/8.2.0 python_gpu/3.8.5; pipenv run        python main.py --model v2GAN --data /cluster/scratch/sselgrad/data_root  --epochs 10000 --batch_size 8 --workers 10 --lr '$lr' \
      --save_dir save/ --img_dim 400 --h_flip --v_flip --brightness 0.1 --contrast 0.1 --rotate \
     --lmbda '$lambda' --train_data cil --val_data cil  --val_period 5  --beta1 0.5 --beta2 0.999 --loss '$l'"
       done

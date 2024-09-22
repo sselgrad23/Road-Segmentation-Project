@@ -15,7 +15,7 @@ nvidia-smi
 # pipenv install
 
 
-pipenv run  python main.py --model v2GAN --data /cluster/scratch/zdavid/cil_data_root  --epochs 10000 --batch_size 8 --workers 10 --lr 0.0005 \
+pipenv run  python main.py --model v2GAN --data /cluster/scratch/sselgrad/data_root  --epochs 10000 --batch_size 8 --workers 10 --lr 0.0005 \
      --save_dir save/ --img_dim 400 --h_flip --v_flip --brightness 0.1 --contrast 0.1 --rotate --distort \
     --lmbda 0.5 --train_data cil --val_data cil  --val_period 5  --beta1 0.5 --beta2 0.999
 # --rotate

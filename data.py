@@ -16,7 +16,6 @@ import torch
 def get_transform(args, mean, std) -> A.Compose:
 
     transformations = []
-    # TODO check if We can also just remove all the A.Sequential ...
     if args.distort:
         transformations.append(A.Sequential([A.GridDistortion(p=0.3)]))
     if args.rotate:
@@ -37,7 +36,7 @@ def get_transform(args, mean, std) -> A.Compose:
     return A.Compose(transformations)
 
 
-class ETHCILDataset(torch.utils.data.Dataset):
+class MainDataset(torch.utils.data.Dataset):
     def __init__(self, args, data_dir, split):
         assert split in ['train_only', 'train_split', 'val_split', 'stats', 'eval'], f'Split {split} does not exist in dataset.'
         assert path.exists(data_dir), f'Path {data_dir} does not exist.'
@@ -114,7 +113,7 @@ class ETHCILDataset(torch.utils.data.Dataset):
             return sat_img, torch.tensor(0)
 
 
-class ETHMultiCityDataset(torch.utils.data.Dataset):
+class MultiCityDataset(torch.utils.data.Dataset):
     def __init__(self, args, data_dir, split, cities):
         assert split in ['train_only', 'train_split', 'val_split', 'stats', 'eval'], f'Split {split} does not exist in dataset.'
         assert path.exists(data_dir), f'Path {data_dir} does not exist.'
@@ -130,7 +129,7 @@ class ETHMultiCityDataset(torch.utils.data.Dataset):
         self.split = split
         self.cities = cities
 
-        # TODO: DOES THIS MAKE SENSE.. this was done by manually counting pixels
+        # This was done by manually counting pixels
         self.scale = 34
 
         self.SPLIT_PERCENTAGE = 0.2
@@ -205,12 +204,12 @@ class ETHMultiCityDataset(torch.utils.data.Dataset):
 def create_datasets(args, root_path, split, datasets):
     dataset_list = []
     if 'cil' in datasets:
-        dataset_list.append(ETHCILDataset(args=args, data_dir=str(root_path/'cil_data'), split=split))
+        dataset_list.append(MainDataset(args=args, data_dir=str(root_path/'cil_data'), split=split))
 
     cities_to_add = list({'berlin', 'paris', 'zurich', 'chicago'}.intersection(set(datasets)))
 
     if len(cities_to_add) > 0:
-        dataset_list.append(ETHMultiCityDataset(args=args, data_dir=str(root_path/'cities_data'), split=split, cities=cities_to_add))
+        dataset_list.append(MultiCityDataset(args=args, data_dir=str(root_path/'cities_data'), split=split, cities=cities_to_add))
 
     return dataset_list
 

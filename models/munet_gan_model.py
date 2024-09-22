@@ -5,6 +5,9 @@ import torch
 
 
 class EncBlock(nn.Module):
+    # Building block for encoder part of generator and discriminator
+    # Extracts features from the input by progressively reducing its 
+    # spatial dimensions.
     def __init__(self, in_ch, out_ch, kernel=4, stride=4, pad=1):
         super().__init__()
         self.block = nn.Sequential(
@@ -20,6 +23,10 @@ class EncBlock(nn.Module):
 
 
 class DecBlock(nn.Module):
+    # For decoder part of generator; Similar to EncBlock, but uses 
+    # ConvTranspose2d (transposed convolution) to upsample the input.
+    # Reconstructs the input by progressively increasing its spatial 
+    # dimensions.
     def __init__(self, in_ch, out_ch, kernel=4, stride=4, pad=1):
         super().__init__()
         self.block = nn.Sequential(
@@ -37,6 +44,7 @@ class Generator(nn.Module):
     def __init__(self, depth=1, enc_chs=(3, 32, 64, 128, 256, 512), dec_chs=(512, 256, 128, 64, 32, 1), kernel=5, stride=2, enc_pad=3, dec_pad=1):
         super().__init__()
         
+        # The initial encoder block for the very first encoding step
         inenc = nn.Sequential(
             nn.Conv2d(enc_chs[0], enc_chs[1], kernel_size=kernel, stride=2, padding=enc_pad),
             nn.LeakyReLU(),
@@ -44,7 +52,7 @@ class Generator(nn.Module):
             )
             
         
-        if depth == 1:
+        if depth == 1: # Depth defines how many additional layers (blocks) are added to each stage of encoding and decoding
             outdec = nn.Sequential(
                 nn.ConvTranspose2d(2 * dec_chs[-2], dec_chs[-1], kernel_size=kernel, stride=stride, padding=dec_pad),
                 nn.Sigmoid()
@@ -55,8 +63,8 @@ class Generator(nn.Module):
                 nn.Sigmoid()
                 )
         
-        self.encs = []
-        self.decs = []
+        self.encs = [] # A list of encoder blocks that progressively reduce the size of the image while increasing the number of feature channels.
+        self.decs = [] # A list of decoder blocks that upsample the encoded features and attempt to reconstruct the original input.
         
         for k, (ch1, ch2) in enumerate(zip(enc_chs[: -1], enc_chs[1:])):
             blocks = []
@@ -121,7 +129,7 @@ class Generator(nn.Module):
             for block in blocks:
                 x = block(x)
 
-        x = x[:, :, 0:in_size, 0:in_size]
+        x = x[:, :, 0:in_size, 0:in_size] # output is resized to match the original input dimensions
         return x
 
 
@@ -131,7 +139,8 @@ class Discriminator(nn.Module):
         
         assert mode in ['conv', 'linear'], 'not valid mode'
         self.mode = mode
-
+        
+        #initial convolutional block
         inenc = nn.Sequential(
             nn.Conv2d(enc_chs[0], enc_chs[1], kernel_size=kernel, stride=2, padding=enc_pad),
             nn.LeakyReLU(),

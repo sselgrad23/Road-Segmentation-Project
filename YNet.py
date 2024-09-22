@@ -9,8 +9,6 @@ To accelerate convergence of Y-Net, C1 1 -C16 1 ’s parameters are pre-trained.
 network, containing C1 1 -C16 1 , B1 1 -B5 1 , P1 1 -P5 1 , and three fully connected layers, is con-
 structed. The auxiliary network accepts an input image patch with size of 9 × 9 pixels, and
 outputs a label for this patch
-from the paper...
-?????????????????
 '''
 
 class YNet(nn.Module):
@@ -80,10 +78,10 @@ class Y1(nn.Module):
             nn.ReLU(),
         )
 
-        # TODO: check if the ConvTranspose2d is correct or of we should use the Upsample() layer
+        # TODO: check if the ConvTranspose2d is correct or of I should use the Upsample() layer
         # deconv1 = nn.Upsample()      # D1
         self.deconv1 = nn.ConvTranspose2d(in_channels=2, out_channels=2, kernel_size=4, stride=2, padding=1)  # D1
-        # TODO: now we put the output of C13 into conv_after_deconv1 to reduce the number of channels to 2
+        # TODO: now I put the output of C13 into conv_after_deconv1 to reduce the number of channels to 2
         self.conv_before_concat1 = nn.Sequential(
             nn.Conv2d(in_channels=512, out_channels=2, kernel_size=1, padding=0),
             nn.ReLU()
@@ -98,7 +96,7 @@ class Y1(nn.Module):
         # crop1 =         # R1
         # sum1 =          # S1
 
-        # TODO: here we concatenate the skip with the normal
+        # TODO: here I concatenate the skip with the normal
 
         self.deconv2 = nn.ConvTranspose2d(in_channels=4, out_channels=2, kernel_size=4, stride=2, padding=1)  # D2
 
@@ -115,7 +113,7 @@ class Y1(nn.Module):
         # crop2 =         # R2
         # sum2 =          # S2
 
-        # TODO: here we concatenate the skip with the normal
+        # TODO: here I concatenate the skip with the normal
 
         self.deconv3 = nn.ConvTranspose2d(in_channels=4, out_channels=2, kernel_size=4, stride=2, padding=1)  # D3
         if self.version == 2:
@@ -168,7 +166,6 @@ class Y1(nn.Module):
             )
             self.deconv5 = nn.ConvTranspose2d(in_channels=4, out_channels=2, kernel_size=4, stride=2, padding=1)  # D5
 
-        # TODO: put this crop in the forward!!!
         # neg_pad = (self.padded_size - self.input_dim) // 2
         # crop3 = F.pad(x, (-neg_pad, -neg_pad, -neg_pad, -neg_pad))        # R2
 
@@ -335,13 +332,11 @@ class Y3(nn.Module):
         self.conv2 = conv2d_relu(c_in=16, c_out=16, kernel_size=3, padding=1)  # C2
         self.conv3 = conv2d_relu(c_in=16, c_out=32, kernel_size=3, padding=1)  # C3
         self.conv4 = conv2d_relu(c_in=32, c_out=32, kernel_size=3, padding=1)  # C4
-        # TODO: CHANGE BACK?
         # self.conv5 = conv2d_relu(c_in=32, c_out=2, kernel_size=1, padding=0)  # C5
 
         self.conv5 = nn.Conv2d(in_channels=32, out_channels=1, kernel_size=1, padding=0) # C5
         # self.conv5 = conv2d_relu(c_in=32, c_out=1, kernel_size=1, padding=0)
 
-        # TODO: Why the FUCK is the number of out channels of conv5 2???????????????????
 
     def forward(self, x1, x2):
         # print(f"shape of x36: {x1.shape}")

@@ -17,7 +17,10 @@ flags.DEFINE_string(
 
 foreground_threshold = 0.25 # percentage of pixels of val 255 required to assign a foreground label to a patch
 
-# assign a label to a patch
+"""Assign a label to a patch.
+Takes an image patch (a small part of the image) and assigns a 
+binary label (1 for foreground, 0 for background) based on the threshold.
+"""
 def patch_to_label(patch):
     patch = patch.astype(np.float64) / 255
     df = np.mean(patch)
@@ -26,7 +29,11 @@ def patch_to_label(patch):
     else:
         return 0
 
-
+"""
+Reads an image file, divides it into 16x16 patches, labels each patch, 
+and yields formatted strings for submission (including patch coordinates 
+and label). It also optionally saves the mask image to a directory.
+"""
 def mask_to_submission_strings(image_filename, mask_dir=None):
     """Reads a single image and outputs the strings that should go into the submission file"""
     img_number = int(re.search(r"\d+", image_filename).group(0))
@@ -49,13 +56,18 @@ def mask_to_submission_strings(image_filename, mask_dir=None):
     if mask_dir:
         save_mask_as_img(mask, os.path.join(mask_dir, "mask_" + image_filename.split("/")[-1]))
     
-
+"""
+Converts an array into an image and saves it to the file system.
+"""
 def save_mask_as_img(img_arr, mask_filename):
     img = PIL.Image.fromarray(img_arr)
     os.makedirs(os.path.dirname(mask_filename), exist_ok=True)
     img.save(mask_filename)
 
-
+"""
+Writes the image segmentation predictions to a CSV file with 'id' and 
+'prediction' as columns.
+"""
 def masks_to_submission(submission_filename, mask_dir, *image_filenames):
     """Converts images into a submission file"""
     with open(submission_filename, 'w') as f:
@@ -63,6 +75,11 @@ def masks_to_submission(submission_filename, mask_dir, *image_filenames):
         for fn in image_filenames[0:]:
             f.writelines('{}\n'.format(s) for s in mask_to_submission_strings(fn, mask_dir=mask_dir))
 
+"""
+Retrieves all image filenames from the specified base_dir and processes 
+them to generate a CSV file of predictions using the masks_to_submission 
+function.
+"""
 def main(_):
     image_filenames = [os.path.join(FLAGS.base_dir, name) for name in os.listdir(FLAGS.base_dir)]
     masks_to_submission(FLAGS.submission_filename, "", *image_filenames)
